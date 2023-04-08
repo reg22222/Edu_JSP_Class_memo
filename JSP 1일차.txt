@@ -1,0 +1,63 @@
+@ JDK-17 다운로드 / 설치 / 셋팅 (PATH , %JAVA_HOME%)
+
+@ 이클립스(2022-12) 
+
+=========================================
+
+@ JSP (+서블릿) --->> 웹사이트개발 (+웹서버:Apache Tomcat)
+
+# JSP (Java Server Page) -->> 자바코드 + html -->> 톰캣(서블릿컨테이너)
+
+# jsp코드 -> 서블릿 -> 톰캣(적재)-> 브라우저(출력)
+
+# jsp코드가 html내부에서 작동하는방식
+
+ <% ~자바코드~ %>
+
+=========================================
+
+입력(키보드)--> 처리(자바어플리케이션) -> 출력(모니터)
+
+입력(웹브라우저) --> 처리(웹서버:톰캣) --> 컨테이너(서블릿) 
+
+JSP페이지(템플릿+데이터):동적HTML --> 출력(웹브라우저)
+
+=========================================
+
+@ 회원정보입력 페이지작성(member_reg.html)
+
+(1) 입력상자 4개 (이름,핸폰번호,이메일주소,주소)
+
+ <input type="text" name="u_name">
+
+ <input type="text" name="u_phone">
+
+ <input type="text" name="u_email">
+
+ <input type="text" name="u_addr">
+
+(2) 전송버튼1개
+
+ <input type="submit" value="send">
+
+(3) 전송할곳(output_member.jsp)
+
+(4) 전송방식(POST)
+
+ <form method="POST" action="output_member.jsp">
+
+​
+
+@ 회원정보를 전달받고 출력하는 페이지작성(output_member.jsp)
+
+(1) 전달받은 4개의 데이터를 화면에 출력(request.getParameter)
+
+ String u_name = request.getParameter("u_name");
+
+ String u_phone request.getParameter("u_phone");
+
+ String u_email  request.getParameter("u_email");
+
+ String u_addr  request.getParameter("u_addr");
+
+============================================
