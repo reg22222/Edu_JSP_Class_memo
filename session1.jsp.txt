@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="java.util.ArrayList" %> 
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>session1.jsp</title>
+</head>
+<body>
+<h1>session1.jsp</h1>
+<%
+ //리스트에 회원정보를 저장해두고, 그것을 세션공간에 저장해준다. 
+ ArrayList<String> minfo=new ArrayList<String>();
+ minfo.add("kim");minfo.add("seoul");minfo.add("010-9999-1111");
+ HttpSession sess = request.getSession();
+ sess.setAttribute("name", minfo.get(0));
+ sess.setAttribute("addr", minfo.get(1));
+ sess.setAttribute("phone", minfo.get(2)); 
+ // session2.jsp 페이지에서 해당정보를 접근해서 출력할수있는지 알아본다.
+%>
+</body>
+</html>
