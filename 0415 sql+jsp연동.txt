@@ -1,0 +1,161 @@
+@ html 의 입력방식들 (checkbox , radio , select)
+
+# <select> 태그를 사용한 입력방식
+
+(1) 여러개의 데이터중 1가지를 선택해서 보내는방식.(radio와 비슷함)
+
+(2) <select> 라는 단독태그로 이루어져있으며, 각각의 항목은 <option>이라는 태그로 만들어진다.
+
+(3) 사용예
+
+ 
+
+  "select.html"
+
+​
+
+ <form method="POST" action="/coffees_info.jsp">
+
+ <select name="coffees">
+
+ <option value="Americano">Americano </option>
+
+ <option value="CaffeLatte">CaffeLatte </option>
+
+ <option value="IceAmericano">IceAmericano </option>
+
+ </select>
+
+ </form>
+
+@ 데이터베이스(mysql) 
+
+mysql -> mariaDB (xampp패키지: mysql + web-server + 관리툴)
+
+===========================================
+
+접속명령어 : mysql -u root  -h localhost  -p 
+
+(패스워드는 없기때문에 그냥 엔터를 치면 들어감)
+
+===========================================
+
+@ 데이터베이스를 이용해서 할수있는작업 (CRUD)
+
+C(reate) -->> 데이터저장 (INSERT)
+
+R(ead) -->> 데이터추출 (SELECT)
+
+U(pdate) -->> 데이터수정 (UPDATE)
+
+D(elete) -->> 데이터삭제 (DELETE)
+
+===========================================
+
+@ 데이터베이스 서버(접속) -->> 권한(root:관리자권한) -->> 데이터베이스 생성(폴더) -->> 테이블(파일)
+
+(1) 데이터베이스 생성(폴더)
+
+ CREATE DATABASE  coffees;
+
+(2) 데이터베이스 진입(폴더로 들어가는작업) 
+
+ use coffees;
+
+(3) 데이터를 저장하는곳을 만들어준다.
+
+===========================================
+
+@ coffees 데이터베이스(폴더) 에 정보를 저장할수있는곳을 만들자.(table)
+
+# table (엑셀의 시트같은 형태)
+
+# 스키마(table의 설계도)
+
+- 정보의 종류 / 타입 / 컬럼의 이름
+
+- 커피의 정보를 테이블에 저장한다면? (커피이름, 가격)
+
+- 커피이름(cf_name) , 가격(cf_price)
+
+- 커피이름의 타입(String타입: char/varchar) 
+
+- 가격의 타입(정수타입: int)
+
+=================================================
+
+CREATE  TABLE  coffee_info (cf_name char(100) , cf_price int);
+
+=================================================
+
+-정보의 종류(자동차의 정보)
+
+- 자동차이름(모델명) : 글자타입 : 50글자까지 저장가능
+
+- 자동차의 연료량 : 숫자타입 : 정수 
+
+- 자동차의 가격 : 숫자타입 : 정수 
+
+- 자동차이름(car_name) , 연료량(car_fuel) , 가격(car_price)
+
+​
+
+CREATE  TABLE  car_info (car_name char(50) , car_fuel int , car_price int);
+
+=================================================
+
+-자동차1대의 정보를 저장해봅시다. (INSERT)
+
+ INSERT  INTO  car_info (car_name, car_fuel, car_price) VALUES ('Benz' , 100 , 23 );
+
+=================================================
+
+@ JSP프로젝트(dynamic web project) 에 MySQL을 연동할수있는 드라이버를 다운로드하기.
+
+- mysql.com 사이트에서 다운로드. (mysql JDBC드라이버)
+
+- mysql.....X.X.X......zip (압축파일) ---> 압축해제 ---> mysql....X.X.X....jar (드라이버파일)
+
+​
+
+@ 다운로드받은 드라이버를 "dynamic web project" 에 연동하는 방법.
+
+=================================================
+
+JSP페이지에서 데이터베이스 접속시 필요한정보들
+
+(1) 접속IP(도메인) : localhost
+
+(2) 아이디(관리자) : root
+
+(3) 비밀번호 : 없음.(Null패스워드) --> 코드에서 어떻게 표현하는가? ("")
+
+(4) 데이터베이스 이름(작업공간) --> "coffees"(폴더이름)
+
+=======================================
+
+@ Prepared Statement 라는 용어에 대해서 검색해보세요!! 
+
+ - 코드내부에서 사용할 SQL문장의 고정적인 부분은 놔두고, 데이터가 들어갈부분만 비워놓는 형식.
+
+ - 보안상 중요한점도있는데, SQL문장에 잘못된 데이터가 들어갈경우를 대비하는것.
+
+​
+
+"SELECT * FROM coffees WHERE cf_name=커피이름"
+
+커피이름은 변수: 잘못된데이터 
+
+​
+
+@ MySQL 의 데이터타입 (실수형데이터 / 날짜타입)
+
+=======================================
+
+@ SQL문장 (저장 + 조회) : JSP코딩 
+
+SELECT ...... ---->  결과(테이블형태) --->> 저장 --->> HTML출력 
+
+​
+
+자바의 클래스 (생성자 + 겟터 + 셋터 + 커스텀생성자) 
