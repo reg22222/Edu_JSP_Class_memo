@@ -1,0 +1,7 @@
+게시판용 샘플테이블
+
+CREATE TABLE guestbook
+
+   (no int primary key, title varchar(100) default NULL, content varchar(500) default NULL,
+
+    writer varchar(20), date timestamp default CURRENT_TIMESTAMP, views int unsigned);
