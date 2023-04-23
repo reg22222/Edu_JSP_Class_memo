@@ -1,0 +1,263 @@
+@ 게시판 데이터베이스 + 테이블제작
+
+(1) 필요한정보(글번호/글제목/글내용/글쓴이/글쓴날짜/조회수)
+
+​
+
+CREATE DATABASE guestbook_d;
+
+use guestbook_d;
+
+ALTER DATABASE guestbook_d CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+​
+
+CREATE TABLE guestbook_t
+
+(no int primary key auto_increment, 
+
+title varchar(100) default NULL, 
+
+content varchar(500) default NULL,
+
+writer varchar(20) default NULL, 
+
+date timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+
+views int unsigned default 0) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+​
+
+​
+
+C:\xampp7641>cd mysql/bin
+
+​
+
+C:\xampp7641\mysql\bin>mysql -u root -h localhost -p
+
+Enter password:
+
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+
+Your MariaDB connection id is 440
+
+Server version: 10.4.28-MariaDB mariadb.org binary distribution
+
+​
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+​
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+​
+
+MariaDB [(none)]> show databases;
+
++--------------------+
+
+| Database           |
+
++--------------------+
+
+| coffees            |
+
+| guestbook_d        |
+
+| information_schema |
+
+| mysql              |
+
+| performance_schema |
+
+| phpmyadmin         |
+
+| test               |
+
++--------------------+
+
+7 rows in set (0.001 sec)
+
+​
+
+MariaDB [(none)]> use guestbook_d;
+
+Database changed
+
+MariaDB [guestbook_d]> show tables;
+
++-----------------------+
+
+| Tables_in_guestbook_d |
+
++-----------------------+
+
+| guestbook_t           |
+
++-----------------------+
+
+1 row in set (0.001 sec)
+
+​
+
+MariaDB [guestbook_d]> desc guestbook_t;
+
++---------+------------------+------+-----+---------------------+-------------------------------+
+
+| Field   | Type             | Null | Key | Default             | Extra                         |
+
++---------+------------------+------+-----+---------------------+-------------------------------+
+
+| no      | int(11)          | NO   | PRI | NULL                | auto_increment                |
+
+| title   | varchar(100)     | YES  |     | NULL                |                               |
+
+| content | varchar(500)     | YES  |     | NULL                |                               |
+
+| writer  | varchar(20)      | YES  |     | NULL                |                               |
+
+| date    | timestamp        | NO   |     | current_timestamp() | on update current_timestamp() |
+
+| views   | int(10) unsigned | YES  |     | 0                   |                               |
+
++---------+------------------+------+-----+---------------------+-------------------------------+
+
+6 rows in set (0.013 sec)
+
+​
+
+MariaDB [guestbook_d]> INSERT INTO guestbook_t (title,content,writer)
+
+    -> VALUES ('TEST-TITLE' , 'TEST-CONTENT' , 'TEST-WRITER');
+
+Query OK, 1 row affected (0.008 sec)
+
+​
+
+MariaDB [guestbook_d]> SELECT * FROM guestbook_t;
+
++----+------------+--------------+-------------+---------------------+-------+
+
+| no | title      | content      | writer      | date                | views |
+
++----+------------+--------------+-------------+---------------------+-------+
+
+|  1 | TEST-TITLE | TEST-CONTENT | TEST-WRITER | 2023-04-22 14:54:32 |     0 |
+
++----+------------+--------------+-------------+---------------------+-------+
+
+1 row in set (0.000 sec)
+
+​
+
+MariaDB [guestbook_d]> INSERT INTO guestbook_t (title,content,writer)
+
+    -> VALUES ('TEST-TITLE2' , 'TEST-CONTENT2' , 'TEST-WRITER2');
+
+Query OK, 1 row affected (0.008 sec)
+
+​
+
+MariaDB [guestbook_d]> SELECT * FROM guestbook_t;
+
++----+-------------+---------------+--------------+---------------------+-------+
+
+| no | title       | content       | writer       | date                | views |
+
++----+-------------+---------------+--------------+---------------------+-------+
+
+|  1 | TEST-TITLE  | TEST-CONTENT  | TEST-WRITER  | 2023-04-22 14:54:32 |     0 |
+
+|  2 | TEST-TITLE2 | TEST-CONTENT2 | TEST-WRITER2 | 2023-04-22 14:55:38 |     0 |
+
++----+-------------+---------------+--------------+---------------------+-------+
+
+2 rows in set (0.000 sec)
+
+​
+
+MariaDB [guestbook_d]>
+
+@ 게시판의 구조 
+
+================================
+
+(1) 글쓰기(INSERT)
+
+ "write.html" -> 정보입력 -> "write.jsp" -> 접속/저장 -> 결과
+
+​
+
+# write.jsp 페이지제작하기
+
+1. 기존의 코드중에 "INSERT" 패턴을 사용하는 부분이 필요함.
+
+2. 기본적으로 접속하는 코드도 필요함.
+
+3. request.getParameter 로 데이터를 전달받는 부분이 필요함.(3개의 데이터)
+
+4. 3개의 데이터를 SQL문장과 결합해서 실행시키는 코드가 필요함. (preparedStatement)
+
+ .setString( )
+
+============================================================
+
+(2) 글읽기(SELECT) : 글1개를 읽어오는것.(조건)
+
+1. 글번호를 입력하고 전달해주는 페이지(read.html)
+
+ * 글번호를 입력할 입력상자1개(<input type="text"...>)
+
+ * 전송버튼(POST) -> "read.jsp"
+
+​
+
+2. "read.jsp" 페이지에서 글번호를 전달받아서, 해당글을 검색한후에 결과를 출력한다. 
+
+===========================================================
+
+(3) 글목록(SELECT) : 전체글을 읽어오는것.(조건x)
+
+ * "list.jsp" 페이지로 접속하면, 전체글을 읽어와서 화면에 출력한다.
+
+ * SQL문장:  "SELECT * FROM guestbook_t"
+
+ * 여러개의 결과를 가져오기때문에, 일반적인 방법으로는 결과를 저장할수없다.
+
+ * 여러개의 결과(객체) 를 저장할수있는 컬렉션(ArrayList) 가 필요함.
+
+============================================================
+
+(4) 글삭제(DELETE) : 글1개를 삭제하는것(조건)
+
+ 1. "delete.html" -> 삭제할글번호전달 -> "delete.jsp" -> 해당글을 삭제 
+
+ 2. SQL문장: "DELETE FROM guestbook_t WHERE no=삭제할글번호"
+
+============================================================
+
+(5) 글수정(SELECT + UPDATE) : 글1개를 수정하는것(조건)
+
+ 1. "update.html" 페이지로딩 [* read.html 페이지를 복사했음] 
+
+ 2. 수정할글번호를 전달한다.
+
+-------------------------------------------
+
+[* read.jsp 페이지를 복사했음 ]
+
+ 3. "update.jsp" 페이지가 글번호를 전달받아서, 해당글을 조회한다.(SELECT)
+
+ 4. 검색된글을 화면에 보여준다. (가져온글의 정보중 수정가능한 데이터들은 별도로 처리해야함)
+
+-------------------------------------------
+
+​
+
+ 5. 글제목 , 글내용, 글쓴이는 입력상자안에(<input type="text"....>) 보여줘야함.
+
+ 6. 수정할것을 고친다음에 전송버튼을 누를수있게 해줘야함. (<form> 이 필요하다는얘기)
+
+===========================================================
