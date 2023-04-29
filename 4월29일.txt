@@ -1,0 +1,223 @@
+@ 글쓴날짜로 검색하는 기능추가 
+
+# search.html 에 "글쓴날짜" 라는것을 추가해준다.
+
+- 검색어를 입력할때는 "연-월-일 시:분:초" 포맷으로 입력해야함.(테이블에 저장된 스타일)
+
+- ex) "2022-12-23 11:10:43" (중간에 공백이 1개들어감)
+
+​
+
+# search_word 와 search_target 이 전송되는것은 같다.(POST)
+
+# search.jsp 의 if~ else if 블럭에 새로운블럭을 추가해준다.("date" 라는것이 전달되었을때)
+
+​
+
+# 새로운블럭에 추가될내용
+
+(1) 전달받은 검색대상과 검색어를 이용해서 SQL문을 구성해준다.
+
+ - 검색명령어의 내용은 특정날짜이후의 모든글을 가져오는것이다.
+
+ - 힌트: 특정날짜이후라는것을 어떻게 체크할수있는가? (날짜타입은 원래숫자이기 때문에 크기비교가 가능하다.)
+
+  <select name="search_target">
+
+  <option value="title_content">글제목+글내용</option>
+
+  <option value="writer">글쓴이</option>
+
+   <option value="date">글쓴날짜</option>
+
+ </select>
+
+​
+
+​
+
+else if(search_target.equals("date")){
+
+stmt = conn.prepareStatement("SELECT * FROM guestbook_t WHERE date>=?");
+
+stmt.setString(1, search_word);
+
+}
+
+​
+
+(2) 검색된 결과를 출력파트에 전달해준다.
+
+=================================================================
+
+@ 정렬기능추가 (글목록조회시)
+
+# 기존의 SQL에 order by 를 추가해서 특정필드(title)기준으로 정렬해서 가지고오도록한다.
+
+"SELECT * FROM guestbook_t ORDER BY title ASC" (가나다라.. ABCD순)
+
+=================================================================
+
+@ list.jsp 페이지 실행한후, "글쓴날짜" 라는 부분을 누르면, 최신글순으로 정렬하도록 한다.
+
+(1) list.jsp 의 출력부분중 "글쓴날짜" 부분에 링크를 걸어준다.
+
+(2) 그곳을 누르면, GET으로 어떤데이터를 보내도록한다.
+
+(3) 그 데이터를 받아서, 처리하는부분에 SQL로 최신글을 가져오도록 해준다.
+
+=================================================================
+
+​
+
+@ 북쇼핑몰 프로젝트 (미니프로젝트)
+
+# 책을 판매하는 웹사이트를 가정해서 제작하기로 한다. 
+
+==================================================
+
+# 데이터베이스이름(book_d)
+
+CREATE DATABASE book_d;
+
+ALTER DATABASE book_d CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+​
+
+# 책에 대한 정보를 정리한다.(테이블이름: book_t)
+
+- 책의 고유번호(isbn) : 숫자(int default 0 primary key)
+
+- 제목(title) : varchar(50) default "Empty"
+
+- 저자(author) : varchar(20) default "Empty"
+
+- 출판사(publisher) : varchar(20) default "Empty"
+
+- 출판일(date) : timestamp default CURRENT_TIMESTAMP
+
+- 가격(price) : int default 0
+
+- 재고갯수(quantity) : int default 1
+
+- 카테고리번호(cat_no) : int default 0
+
+​
+
+소설 1권
+
+10011234 불편한편의점 문경수 한빛출판사 1200 20 1
+
+IT 1권
+
+10071255 JSP프로그래밍 조윤기 정보문화사 25000 7 2
+
+외국어 1권
+
+10091555 토익단어Top100 이상준 해커스토익연구소 15700 50 3
+
+​
+
+완성된SQL문 :
+
+ CREATE TABLE book_t (isbn int default 0 primary key,
+
+title varchar(50) default 'Empty',
+
+     author varchar(20) default 'Empty',
+
+publisher varchar(20) default 'Empty',
+
+     date timestamp default CURRENT_TIMESTAMP,  
+
+price int default 0,
+
+    quantity int default 1,
+
+cat_no int default 0) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+==================================================
+
+# 책의 카테고리정보만 가지고있는 테이블(categories)
+
+- 카테고리이름(cat_name): varchar(50)
+
+- 카테고리번호(cat_no): int default 0 primary key 
+
+ 
+
+완성된SQL문 : CREATE  TABLE  categories (cat_name varchar(50),cat_no int default 0 primary key )
+
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+==================================================
+
+@ 메인페이지(카테고리정보를 보여준다)
+
+# 페이지이름: "home.jsp" 
+
+(1) 이 페이지는 접속시 모든 카테고리정보를 가져와서 화면에 테이블형태로 출력한다.
+
+"SELECT * FROM categories ORDER BY cat_no ASC"
+
+​
+
+​
+
+(2) 일단, 처음엔 카테고리번호도 같이보여주지만, 실제로는 보이지않도록 해야함.(사용자에게 필요없음)
+
+(3) 출력이 잘된다면, "소설","IT","외국어" 부분을 누르면 다음페이지로 넘어간다.(목록페이지)
+
+(4) 목록페이지에게 카테고리번호를 전달해준다.(링크)
+
+==================================================
+
+@ 목록페이지(bookList.jsp)
+
+(1) 전달받은 카테고리번호를 이용해서, book_t 테이블에서 해당카테고리의 모든책들의 정보를 가져온다.
+
+(2) 가져온 정보중 필수적으로 보여줄만한것들만 테이블로 출력한다.
+
+​
+
+ - 책이름
+
+ - 가격
+
+ - 저자
+
+ - 출판사
+
+==================================================
+
+@ 상세정보페이지(bookDetail.jsp) 
+
+# 목록페이지에서 전달한 책고유번호로 해당책의 모든정보를 가져옴.
+
+​
+
+(1) bookList.jsp 페이지의 출력에서 책제목(title)을 누르면, 책고유번호(isbn)가 전달되어야함.
+
+(2) 전달된 책의 고유번호로 해당책을 조회해서 모든정보를 가져옴.
+
+(3) 가져온 정보들을 화면에 출력한다. 
+
+==================================================
+
+@ 검색페이지 (search.html + search.jsp)
+
+# 특정검색대상과 검색어를 전달해서 정보를 조회
+
+​
+
+(1) search.html (검색대상과 검색어입력)-> 전달 -> search.jsp
+
+ - 책제목
+
+ - 날짜
+
+​
+
+(2) search.jsp (조회+출력) 
+
+ - 출력(테이블형태) 
